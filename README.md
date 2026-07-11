@@ -97,5 +97,24 @@ Link or copy `queries/highlights.scm`, `queries/folds.scm`, and
 
 Standalone home of the AWL tree-sitter grammar, extracted from the aion repo
 (`tools/tree-sitter-awl`, aion @ de7a978b) on 2026-07-12 so editor toolchains (Zed
-grammar fetch, web-tree-sitter) can consume it by URL. Until the pair rules on
-direction of authority, grammar changes land in aion first and are mirrored here.
+grammar fetch, web-tree-sitter) can consume it by URL.
+
+**Direction of authority (pair-ruled 2026-07-12):** aion's
+`tools/tree-sitter-awl` is AUTHORITATIVE — the grammar co-evolves with the
+parser, corpus, and checker in single commits, and splitting authority would
+put the highlighting source and the language on different clocks. This repo is
+the **published mirror**, updated by whoever changes the grammar. Extension
+rev-pins are the freshness fence: a pinned mirror can be stale, but it cannot
+lie about what it is.
+
+**Publish-before-pin (the amendment that makes the fence honest):** an
+extension `rev` may only name a sha VERIFIED PRESENT on this public mirror
+(one anonymous `git ls-remote` before the pin lands). A pin naming a sha that
+never reached the mirror works from an authenticated checkout and dies from an
+anonymous fetch — the exact stale-reference failure shape this ruling exists
+to kill. With the clause, the seam is stale-safe by construction rather than
+by care. (Mechanizing the check into aion's gates for any diff touching a
+grammar rev pin is sanctioned follow-on work.)
+
+This repo transfers to the `ablative-io` org once the org's repo can be
+public; GitHub redirects plus the rev pins make the transfer free.
