@@ -1,9 +1,11 @@
 # tree-sitter-awl
 
 Tree-sitter grammar and editor queries for the Aion Workflow Language (AWL)
-rev-2 surface. This parser is a presentation layer for highlighting and
-structural editing; `crates/aion-awl` remains the only parser/checker used for
-diagnostics.
+rev-2 surface plus the B1/B2 flow vocabulary (`const` declarations,
+triple-quoted raw strings, `json { … }` literals, `schema of`, `subflow`,
+`distribute`/`sequence`/`collect` regions, and `max N visits`). This parser
+is a presentation layer for highlighting and structural editing;
+`crates/aion-awl` remains the only parser/checker used for diagnostics.
 
 ## Design
 
@@ -93,28 +95,27 @@ Link or copy `queries/highlights.scm`, `queries/folds.scm`, and
 `queries/indents.scm` into Helix's `runtime/queries/awl/` directory, then run
 `hx --grammar fetch && hx --grammar build`.
 
-## Provenance
+## Publishing: this directory is authoritative; the standalone repo is a mirror
 
-Standalone home of the AWL tree-sitter grammar, extracted from the aion repo
-(`tools/tree-sitter-awl`, aion @ de7a978b) on 2026-07-12 so editor toolchains (Zed
-grammar fetch, web-tree-sitter) can consume it by URL.
+Pair-ruled 2026-07-12. This directory is the AUTHORITATIVE home of the AWL
+grammar — it co-evolves with the parser, corpus, and checker in single
+commits. The public standalone repo
+(`https://github.com/tomWhiting/tree-sitter-awl`, transferring to
+`ablative-io` once the org repo can be public) is the **published mirror**
+that editor toolchains fetch anonymously (Zed grammar fetch,
+nvim-treesitter remote install, web-tree-sitter).
 
-**Direction of authority (pair-ruled 2026-07-12):** aion's
-`tools/tree-sitter-awl` is AUTHORITATIVE — the grammar co-evolves with the
-parser, corpus, and checker in single commits, and splitting authority would
-put the highlighting source and the language on different clocks. This repo is
-the **published mirror**, updated by whoever changes the grammar. Extension
-rev-pins are the freshness fence: a pinned mirror can be stale, but it cannot
-lie about what it is.
+The ops console vendors a compiled copy of this grammar
+(`apps/aion-ops-console/src/features/authoring/assets/awl.wasm`, built with
+`tree-sitter build --wasm`) together with a copy of `queries/highlights.scm`.
+When the grammar or the highlight query changes, both vendored files must be
+refreshed as a pair — a new query against an old wasm can name node types the
+compiled grammar does not know.
 
-**Publish-before-pin (the amendment that makes the fence honest):** an
-extension `rev` may only name a sha VERIFIED PRESENT on this public mirror
-(one anonymous `git ls-remote` before the pin lands). A pin naming a sha that
-never reached the mirror works from an authenticated checkout and dies from an
-anonymous fetch — the exact stale-reference failure shape this ruling exists
-to kill. With the clause, the seam is stale-safe by construction rather than
-by care. (Mechanizing the check into aion's gates for any diff touching a
-grammar rev pin is sanctioned follow-on work.)
-
-This repo transfers to the `ablative-io` org once the org's repo can be
-public; GitHub redirects plus the rev pins make the transfer free.
+**If you change this grammar, you own the mirror push.** And
+**publish-before-pin**: any extension `rev` (editors/zed-awl/extension.toml,
+nvim-awl's default `install_info`) may only name a sha VERIFIED PRESENT on
+the public mirror — one anonymous `git ls-remote` before the pin lands. A
+pin naming an unpushed sha works from an authenticated checkout and dies
+from an anonymous fetch. Mechanizing this check into the gates for any diff
+touching a grammar rev pin is sanctioned follow-on work.
