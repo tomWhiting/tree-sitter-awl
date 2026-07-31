@@ -23,7 +23,6 @@ CLI. Maintainers regenerate with tree-sitter CLI **0.26.10**, pinned exactly in
 `package.json`:
 
 ```sh
-cd tools/tree-sitter-awl
 npm install
 npx tree-sitter generate
 ```
@@ -37,18 +36,21 @@ tree-sitter generate
 
 ## Verification
 
-From this directory:
+From this directory — this is the whole of what is runnable here:
 
 ```sh
 tree-sitter test
-./test/corpus-sweep.sh
-./test/highlight-smoke.sh
 ```
 
-The corpus sweep discovers every `*/valid/*.awl` fixture, both rev-2 design
-examples, and `examples/awl-hello/awl_hello.awl`; it rejects any `ERROR` or
-`MISSING` node. The highlight smoke test runs the highlighter over all three
-flagship paths and compares `awl_hello` captures to the committed golden.
+Two heavier gates exist in the authoritative copy and are deliberately not
+shipped here. `test/corpus-sweep.sh` parses every `*/valid/*.awl` fixture, both
+rev-2 design examples and `examples/awl-hello/awl_hello.awl`, rejecting any
+`ERROR` or `MISSING` node; `test/highlight-smoke.sh` highlights the three
+flagship paths and compares `awl_hello` captures to a committed golden. Both
+resolve their fixture root as `<grammar>/../..`, which is the aion repository
+root and, from this standalone checkout, a directory outside it — so they could
+never run here, and until 2026-07-31 this file told readers to run them anyway.
+They are the gates that must pass in aion before anything is pushed here.
 
 ## Neovim
 
@@ -95,15 +97,16 @@ Link or copy `queries/highlights.scm`, `queries/folds.scm`, and
 `queries/indents.scm` into Helix's `runtime/queries/awl/` directory, then run
 `hx --grammar fetch && hx --grammar build`.
 
-## Publishing: this directory is authoritative; the standalone repo is a mirror
+## Publishing: this repository is the mirror; aion is authoritative
 
-Pair-ruled 2026-07-12. This directory is the AUTHORITATIVE home of the AWL
-grammar — it co-evolves with the parser, corpus, and checker in single
-commits. The public standalone repo
+Pair-ruled 2026-07-12. The AUTHORITATIVE home of the AWL grammar is
+`tools/tree-sitter-awl` inside the aion repository, where it co-evolves with
+the parser, corpus, and checker in single commits. **This** repository
 (`https://github.com/tomWhiting/tree-sitter-awl`, transferring to
 `ablative-io` once the org repo can be public) is the **published mirror**
 that editor toolchains fetch anonymously (Zed grammar fetch,
-nvim-treesitter remote install, web-tree-sitter).
+nvim-treesitter remote install, web-tree-sitter). Nothing is authored here;
+every file is copied from aion and must stay byte-identical to it.
 
 The ops console vendors a compiled copy of this grammar
 (`apps/aion-ops-console/src/features/authoring/assets/awl.wasm`, built with
